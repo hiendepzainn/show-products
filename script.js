@@ -1,3 +1,5 @@
+var currentlyShowProducts = [];
+
 // Hiển thị All categories & All products
 var showCategorysAndAllProducts = () => {
   fetch("https://dummyjson.com/products")
@@ -6,11 +8,13 @@ var showCategorysAndAllProducts = () => {
     })
 
     .then((data) => {
+      currentlyShowProducts = [];
       console.log(data);
       let products = data.products;
       let htmlProductList = "";
       let categoryOfProduct = [];
       products.forEach((element) => {
+        currentlyShowProducts.push(element);
         categoryOfProduct.push(element.category);
         htmlProductList += `<div class="outer-product col-sm-2 col-2">
           <div class="product">
@@ -71,12 +75,14 @@ var showProductsByCategory = (nameCategory) => {
     })
 
     .then((data) => {
+      currentlyShowProducts = [];
       console.log(data);
       let products = data.products;
       let htmlProductList = "";
 
       products.forEach((element) => {
         if (element.category == nameCategory) {
+          currentlyShowProducts.push(element);
           htmlProductList += `<div class="outer-product col-sm-2 col-2">
           <div class="product">
             <div class="image">
@@ -118,12 +124,14 @@ var showProductsByKeyName = (keyName) => {
     })
 
     .then((data) => {
+      currentlyShowProducts = [];
       console.log(data);
       let products = data.products;
       let htmlProductList = "";
 
       products.forEach((element) => {
         if (element.title.toLowerCase().includes(keyName)) {
+          currentlyShowProducts.push(element);
           htmlProductList += `<div class="outer-product col-sm-2 col-2">
           <div class="product">
             <div class="image">
@@ -167,6 +175,57 @@ searchButton.addEventListener("click", () => {
   } else {
     showProductsByKeyName(searchInput.value);
   }
+});
+
+//Chức năng sort sản phẩm theo yêu cầu của <Select>
+var select = document.querySelector("select");
+select.addEventListener("change", () => {
+  let sortProductsList = currentlyShowProducts;
+  switch (select.value) {
+    case "defaulT"://BUG đang xem xét
+      break;
+
+    case "priceUp":
+      sortProductsList.sort((a, b) => a.price - b.price);
+      break;
+
+    case "priceDown":
+      sortProductsList.sort((a, b) => b.price - a.price);
+      break;
+
+    case "discountDown":
+      sortProductsList.sort(
+        (a, b) => b.discountPercentage - a.discountPercentage
+      );
+      break;
+  }
+  console.log(sortProductsList);
+
+  let htmlProductList = "";
+  sortProductsList.forEach((element) => {
+    htmlProductList += `<div class="outer-product col-sm-2 col-2">
+      <div class="product">
+        <div class="image">
+          <img
+            src=${element.thumbnail}
+            alt="image"
+          />
+        </div>
+
+        <div class="info-product">
+          <h4 class="name-product">${element.title}</h4>
+          <div class="details">
+            <span class="price">${element.price}</span>
+            <span>Còn lại: ${element.stock}sp</span>
+          </div>
+        </div>
+        <div class="discount">-${Math.round(element.discountPercentage)}%</div>
+      </div>
+    </div>`;
+  });
+
+  let rowShowProducts = document.querySelector(".show-products-block .row");
+  rowShowProducts.innerHTML = htmlProductList;
 });
 
 showCategorysAndAllProducts();

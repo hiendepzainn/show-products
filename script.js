@@ -52,9 +52,18 @@ var showCategorysAndAllProducts = () => {
 
       // Gán sự kiện "click" thì hiển thị theo Category
       let categoryButtonList = document.querySelectorAll(".item-category");
-      categoryButtonList.forEach((button) => {
-        button.addEventListener("click", () => {
-          showProductsByCategory(button.innerHTML);
+      categoryButtonList.forEach((item) => {
+        item.addEventListener("click", () => {
+          showProductsByCategory(item.innerHTML);
+          let allCategories = document.querySelectorAll(
+            ".category-block .item-category"
+          );
+          allCategories.forEach((element) => {
+            element.style.backgroundColor = "rgb(240, 247, 44)";
+          });
+          item.style.backgroundColor = "rgb(236, 201, 44)";
+          let input = document.querySelector("input");
+          input.value = "";
         });
       });
 
@@ -109,6 +118,9 @@ var showProductsByCategory = (nameCategory) => {
 
       let rowShowProducts = document.querySelector(".show-products-block .row");
       rowShowProducts.innerHTML = htmlProductList;
+
+      let select = document.querySelector("select");
+      select.value = "defaulT";
     })
 
     .catch((error) => {
@@ -158,6 +170,16 @@ var showProductsByKeyName = (keyName) => {
 
       let rowShowProducts = document.querySelector(".show-products-block .row");
       rowShowProducts.innerHTML = htmlProductList;
+
+      let select = document.querySelector("select");
+      select.value = "defaulT";
+      //reset màu của categories
+      let allCategories = document.querySelectorAll(
+        ".category-block .item-category"
+      );
+      allCategories.forEach((element) => {
+        element.style.backgroundColor = "rgb(240, 247, 44)";
+      });
     })
 
     .catch((error) => {
@@ -172,6 +194,8 @@ console.log(searchButton);
 searchButton.addEventListener("click", () => {
   if (searchInput.value == "") {
     showCategorysAndAllProducts();
+    let select = document.querySelector("select");
+    select.value = "defaulT";
   } else {
     showProductsByKeyName(searchInput.value);
   }
@@ -180,9 +204,9 @@ searchButton.addEventListener("click", () => {
 //Chức năng sort sản phẩm theo yêu cầu của <Select>
 var select = document.querySelector("select");
 select.addEventListener("change", () => {
-  let sortProductsList = currentlyShowProducts;
+  let sortProductsList = currentlyShowProducts.slice();
   switch (select.value) {
-    case "defaulT"://BUG đang xem xét
+    case "defaulT":
       break;
 
     case "priceUp":
@@ -199,7 +223,6 @@ select.addEventListener("change", () => {
       );
       break;
   }
-  console.log(sortProductsList);
 
   let htmlProductList = "";
   sortProductsList.forEach((element) => {
